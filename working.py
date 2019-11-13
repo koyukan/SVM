@@ -1,4 +1,6 @@
 import math
+import pickle
+
 import pandas as pd
 import sklearn
 from sklearn import svm
@@ -10,16 +12,18 @@ MAGNETOMETER_FILE_NAME = 'magnet.txt'
 
 LENGTH_OF_VECTOR = 250
 
+ROOT_FOLDER = "datum/"
+
 
 # Verify files are of the correct length
 def verify_all_files(prefix):
-    if sum(1 for line in open(prefix + ACCELEROMETER_FILE_NAME)) < LENGTH_OF_VECTOR:
-        raise RuntimeError(prefix + "Acce - File is too short")
+    if sum(1 for line in open(ROOT_FOLDER + prefix + ACCELEROMETER_FILE_NAME)) < LENGTH_OF_VECTOR:
+        raise RuntimeError(ROOT_FOLDER + prefix + "Acce - File is too short")
 
-    if sum(1 for line in open(prefix + GYROSCOPE_FILE_NAME)) < LENGTH_OF_VECTOR:
+    if sum(1 for line in open(ROOT_FOLDER + prefix + GYROSCOPE_FILE_NAME)) < LENGTH_OF_VECTOR:
         raise RuntimeError(prefix + "Gyro - File is too short")
 
-    if sum(1 for line in open(prefix + MAGNETOMETER_FILE_NAME)) < LENGTH_OF_VECTOR:
+    if sum(1 for line in open(ROOT_FOLDER + prefix + MAGNETOMETER_FILE_NAME)) < LENGTH_OF_VECTOR:
         raise RuntimeError(prefix + "Magnet - File is too short")
 
 
@@ -46,9 +50,9 @@ def parse_data_of_folder(prefix):
 # returns features as 12d array, adding magnitude to the acce, gyro and magnet
 def parse_data_into_12d_array(prefix):
     # Open files
-    with open(prefix + ACCELEROMETER_FILE_NAME) as a, \
-            open(prefix + GYROSCOPE_FILE_NAME) as g, \
-            open(prefix + MAGNETOMETER_FILE_NAME) as m:
+    with open(ROOT_FOLDER + prefix + ACCELEROMETER_FILE_NAME) as a, \
+            open(ROOT_FOLDER + prefix + GYROSCOPE_FILE_NAME) as g, \
+            open(ROOT_FOLDER + prefix + MAGNETOMETER_FILE_NAME) as m:
 
         # instanciate result and ignores timestamp
         result = []
@@ -79,7 +83,6 @@ def parse_data_into_12d_array(prefix):
             result.append([ax, ay, az, am, gx, gy, gz, gm, mx, my, mz, mm])
 
     # closes files
-    print(len(result))
     return result
 
 
@@ -361,3 +364,4 @@ true_positive, false_positive = get_performance_of_prediction(prediction, [0, 0,
 print("True positives: " + str(true_positive) + " over 3")
 print("False positives: " + str (false_positive) )
 
+pickle.dump(model, open("svm.p", "wb"))
