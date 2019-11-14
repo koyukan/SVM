@@ -1,3 +1,4 @@
+import math
 import pandas as pd
 import numpy as np
 import os
@@ -68,6 +69,8 @@ def get_pathnames (path) :
 
    return folders[1:]
 
+
+
 def butter_mag (dataset):
 
    temp = []
@@ -85,7 +88,49 @@ def butter_mag (dataset):
       temp.append(data[index])
    return temp
 
-# for each n, the different features are added
+
+
+# from numpy.lib.stride_tricks import as_strided
+#
+#
+# def windowed_view(arr, window, overlap):
+#     arr = np.asarray(arr)
+#     window_step = window - overlap
+#     new_shape = arr.shape[:-1] + ((arr.shape[-1] - overlap) // window_step, window)
+#     new_strides = (arr.strides[:-1] + (window_step * arr.strides[-1],) + arr.strides[-1:])
+#     return as_strided(arr, shape=new_shape, strides=new_strides)
+#
+#
+#
+# def windows(dt, ws, ol):
+#     r = np.arange(len(dt))
+#     s = r[::ol]
+#     z = list(zip(s, s + ws))
+#     f = '{0[0]}:{0[1]}'.format
+#     g = lambda ol: dt.iloc[ol[0]:ol[1]]
+#     return pd.concat(map(g, z), keys=map(f, z))
+
+
+
+
+
+
+
+
+def window_data (results):
+    len_of_window = int(LENGTH_OF_VECTOR/5 + LENGTH_OF_VECTOR/15)
+    len_of_step = int(LENGTH_OF_VECTOR/5)
+    i = 0
+    all_features = []
+
+    while i+len_of_window <= len(results):
+        all_features.extend(get_features_from_window(results[i:i+len_of_window]))
+        i += len_of_step
+    return all_features
+
+
+
+
 def get_features_from_window(arr):
     features = []
 
@@ -220,31 +265,61 @@ def get_sampen(arr, i):
     sampen = []
 
     for data in arr:
+        if data[i] == 0 : print(data)
         sampen.append(data[i])
 
+    sampen = normalize_data(sampen)
+    return sampen2(sampen)
 
-    return sampen2(normalize_data(sampen))
+
+
+
+
+def extract_features (dat) :
+
+
+    # for every iteration in the loop, all the features from every column will be stored in this variable
+    all_features = []
+
+    for data in dat:
+        sel = data[['ax', 'ay', 'az', 'am', 'gx', 'gy', 'gz', 'gm', 'mx', 'my', 'mz', 'mm']].values.tolist()
+        temp = window_data(sel)
+        all_features.append(temp)
+
+
+    return all_features
+
+
+
+
+
+
+
+##### INSTRUCTIONS #####
 
 
 
 daym = butter_mag(generate_datasets(get_pathnames(PATH)))
 daym[9].to_csv('kaka.csv')
-print(daym[8]['ax'])
-train, test = train_test_split(daym, test_size=0.3)
 
-print("training model...")
+t=extract_features(daym)
+print(t)
 
-model = svm.SVC(kernel= "rbf", C=100,gamma='scale')
-model.fit(train, test)
+train, test = train_test_split(t, test_size=0.3)
 
-prediction = model.predict(test)
 
-print("Prediction: ")
-print(prediction)
+
+# print("training model...")
+#
+# model = svm.SVC(kernel= "rbf", C=100,gamma='scale')
+# model.fit(train, test)
+#
+# prediction = model.predict(test)
+#
+# print("Prediction: ")
+# print(prediction)
 
 # true_positive, false_positive = get_performance_of_prediction(prediction, [0, 0, 0, 0, 1, 1, 1, 1, 1])
 # print("True positives: " + str(true_positive) + " over 3")
 # print("False positives: " + str (false_positive) )
 
-x=np.array([1,2,3,4,5,6,7,8,9])
-print (moving_average(x,3))

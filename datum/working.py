@@ -3,6 +3,7 @@ import pandas as pd
 import sklearn
 from sklearn import svm
 from sampen import sampen2, normalize_data
+import pickle
 
 ACCELEROMETER_FILE_NAME = 'acce.txt'
 GYROSCOPE_FILE_NAME = 'gyro.txt'
@@ -236,53 +237,15 @@ def get_energy(arr, i):
 
 
 def get_sampen(arr, i):
+
     sampen = []
+
 
     for data in arr:
         sampen.append(data[i])
 
 
     return sampen2(normalize_data(sampen))
-
-
-
-
-
-from scipy.signal import argrelmin, argrelmax, butter, lfilter, freqz
-
-# fuctions source from Github https://goo.gl/nCf84V
-def butter_lowpass(cutoff, fs, order):
-    # helper function to return coefficients for scipy.lfilter
-    nyq = 0.5 * fs
-    normal_cutoff = cutoff / nyq
-    b, a = butter(order, normal_cutoff, btype='low', analog=False)
-    return b, a
-
-def butter_lowpass_filter(data, cutoff, fs, order=5):
-    # apply lowpass filter
-    b, a = butter_lowpass(cutoff, fs, order=order)
-    y = lfilter(b, a, data)
-    return y
-
-def butter_highpass(cutoff, fs, order):
-    # helper function to return coefficients for scipy.lfilter
-    nyq = 0.5 * fs
-    normal_cutoff = cutoff / nyq
-    b, a = butter(order, normal_cutoff, btype='high', analog=False)
-    return b, a
-
-def butter_highpass_filter(data, cutoff, fs, order=5):
-    # apply highpass filter
-    b, a = butter_highpass(cutoff, fs, order=order)
-    y = lfilter(b, a, data)
-    return y
-
-
-
-
-
-
-
 
 
 
@@ -295,8 +258,6 @@ def toast():
     arr = [[1, 1, 3], [1, 2, 3], [1, 5, 6]]
     assert get_min(arr, 1) == (1, 0)
 
-    argo = [1,3,5,7,53,4,586,54,5645,756,76,346,45758,56,42,223,6,3,6,3,6,3,0,-2,-68756,-6456,0,0,0,345,-12, -34,-34343,342,654,-34,0]
-    print (sampen2(argo,2))
 
 # ###################################
 # statistics for prediction
@@ -361,3 +322,6 @@ true_positive, false_positive = get_performance_of_prediction(prediction, [0, 0,
 print("True positives: " + str(true_positive) + " over 3")
 print("False positives: " + str (false_positive) )
 
+
+
+pickle.dump(model, open("svm.p", "wb"))
