@@ -5,6 +5,7 @@ import pandas as pd
 import sklearn
 from sklearn import svm
 from sampen import sampen2, normalize_data
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
 ACCELEROMETER_FILE_NAME = 'acce.txt'
 GYROSCOPE_FILE_NAME = 'gyro.txt'
@@ -250,45 +251,6 @@ def get_sampen(arr, i):
 
 
 
-
-from scipy.signal import argrelmin, argrelmax, butter, lfilter, freqz
-
-# fuctions source from Github https://goo.gl/nCf84V
-def butter_lowpass(cutoff, fs, order):
-    # helper function to return coefficients for scipy.lfilter
-    nyq = 0.5 * fs
-    normal_cutoff = cutoff / nyq
-    b, a = butter(order, normal_cutoff, btype='low', analog=False)
-    return b, a
-
-def butter_lowpass_filter(data, cutoff, fs, order=5):
-    # apply lowpass filter
-    b, a = butter_lowpass(cutoff, fs, order=order)
-    y = lfilter(b, a, data)
-    return y
-
-def butter_highpass(cutoff, fs, order):
-    # helper function to return coefficients for scipy.lfilter
-    nyq = 0.5 * fs
-    normal_cutoff = cutoff / nyq
-    b, a = butter(order, normal_cutoff, btype='high', analog=False)
-    return b, a
-
-def butter_highpass_filter(data, cutoff, fs, order=5):
-    # apply highpass filter
-    b, a = butter_highpass(cutoff, fs, order=order)
-    y = lfilter(b, a, data)
-    return y
-
-
-
-
-
-
-
-
-
-
 def toast():
     # test get max
     arr = [[1, 2, 3], [1, 2, 3], [1, 5, 6]]
@@ -352,7 +314,7 @@ test_data = collect_data(testing_folder_names)
 
 print("training model...")
 
-model = svm.SVC(kernel= "rbf", C=100,gamma='scale')
+model = svm.SVC(kernel= "linear", C=0.00001,gamma='scale')
 model.fit(train_data, train_test_folder_label)
 
 prediction = model.predict(test_data)
@@ -364,4 +326,6 @@ true_positive, false_positive = get_performance_of_prediction(prediction, [0, 0,
 print("True positives: " + str(true_positive) + " over 3")
 print("False positives: " + str (false_positive) )
 
+resul = accuracy_score([0, 0, 0, 0, 1, 1, 1, 1, 1], prediction)
+print(resul)
 pickle.dump(model, open("svm.p", "wb"))

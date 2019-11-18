@@ -324,4 +324,6 @@ print("False positives: " + str (false_positive) )
 
 
 
+x = [2,3,4,5,'NaN','NaN']
+print(normalize_data(x))
 pickle.dump(model, open("svm.p", "wb"))
