@@ -290,8 +290,8 @@ def get_performance_of_prediction(prediction, actual_data):
 
 
 print("getting data...")
-training_folder_names = ["jeremie1/", "jeremie3/", "jeremie5/", "jeremie7/", "jeremie9/",
-                         "kaan1/", "kaan3/", "kaan5/", "kaan7/", "kaan9/",
+training_folder_names = [ "jeremie5/", "jeremie7/", "jeremie9/",
+                         "kaan1/", "kaan3/","kaan9/",
                          "ariel1/", "ariel5/", "ariel3/", "ariel11/", "ariel10/",
                          "jeremie0/", "jeremie2/", "jeremie4/", "jeremie6/", "jeremie8/",
                          "kaan0/", "kaan2/", "kaan4/", "kaan8/", "kaan6/",
@@ -299,10 +299,9 @@ training_folder_names = ["jeremie1/", "jeremie3/", "jeremie5/", "jeremie7/", "je
 
 
 
-testing_folder_names = [ "jeremie10/", "jeremie11/",
+testing_folder_names = [ "jeremie10/", "jeremie11/","jeremie1/", "jeremie3/", "kaan5/", "kaan7/",
                         "kaan10/", "kaan11/", "ariel7/",  "ariel9/" ,  "ariel12/" ,  "ariel13/" ,  "ariel14/" ]
 train_test_folder_label = [0, 0, 0, 0, 0,
-                           0, 0, 0, 0, 0,
                            1, 1, 1, 1, 1,
                            0, 0, 0, 0, 0,
                            0, 0, 0, 0, 0,
@@ -322,10 +321,12 @@ prediction = model.predict(test_data)
 print("Prediction: ")
 print(prediction)
 
-true_positive, false_positive = get_performance_of_prediction(prediction, [0, 0, 0, 0, 1, 1, 1, 1, 1])
+true_positive, false_positive = get_performance_of_prediction(prediction, [0, 0,0,0,0, 0, 0, 1, 1, 1, 1, 1])
 print("True positives: " + str(true_positive) + " over 3")
 print("False positives: " + str (false_positive) )
 
-resul = accuracy_score([0, 0, 0, 0, 1, 1, 1, 1, 1], prediction)
+resul = accuracy_score([0,0,0, 0,0,0, 0, 0, 1, 1, 1, 1, 1], prediction)
 print(resul)
 pickle.dump(model, open("svm.p", "wb"))
+
+
